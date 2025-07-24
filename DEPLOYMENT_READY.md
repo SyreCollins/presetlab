@@ -36,6 +36,10 @@
 
 Before deployment, update these in your `.env.local`:
 
+NEXT_PUBLIC_SUPABASE_URL=https://iflcmwropyidtqjafjxz.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmbGNtd3JvcHlpZHRxamFmanh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzMzcyNjQsImV4cCI6MjA2NTkxMzI2NH0.A8V7kyJqdtEIARlpaCriU_P7NCsPhZcFxa80v2zqlvU
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
 ```bash
 # Polar Payment Configuration
 POLAR_SECRET_KEY=your_actual_polar_secret_key

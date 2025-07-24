@@ -15,25 +15,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { priceId, planType, isYearly } = await request.json()
+    const { planType, isYearly } = await request.json()
 
-    if (!priceId || !planType) {
+    if (!planType) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Get the correct price ID from environment variables
-    const envPriceId = isYearly
-      ? process.env[`NEXT_PUBLIC_POLAR_${planType.toUpperCase()}_YEARLY_PRICE_ID`]
-      : process.env[`NEXT_PUBLIC_POLAR_${planType.toUpperCase()}_MONTHLY_PRICE_ID`]
+    // Get the correct product ID from environment variables
+    const envProductId = isYearly
+      ? process.env[`NEXT_PUBLIC_POLAR_${planType.toUpperCase()}_YEARLY_PRODUCT_ID`]
+      : process.env[`NEXT_PUBLIC_POLAR_${planType.toUpperCase()}_MONTHLY_PRODUCT_ID`]
 
-    if (!envPriceId) {
-      console.error(`Price ID not found for plan: ${planType}, yearly: ${isYearly}`)
-      return NextResponse.json({ error: "Price ID not configured for this plan" }, { status: 400 })
+    if (!envProductId) {
+      console.error(`Product ID not found for plan: ${planType}, yearly: ${isYearly}`)
+      return NextResponse.json({ error: "Product ID not configured for this plan" }, { status: 400 })
     }
 
-    // Create checkout session with Polar
+    // Create checkout session with Polar using product_id
     const checkoutData = {
-      price_id: envPriceId,
+      product_id: envProductId,
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?checkout=cancelled`,
       customer_email: user.email,

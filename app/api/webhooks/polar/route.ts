@@ -119,7 +119,7 @@ async function handleSubscriptionCreated(data: any, supabase: any) {
   const subscriptionData = {
     user_id: user.id,
     polar_subscription_id: id,
-    plan_type: getPlanTypeFromPrice(price.id),
+    plan_type: getPlanTypeFromProduct(data.product.id),
     status: status,
     billing_cycle: price.recurring?.interval || "monthly",
     amount_cents: price.amount,
