@@ -13,18 +13,18 @@ export const PLAN_LIMITS: Record<string, SubscriptionLimits> = {
     canGenerate: false,
   },
   starter: {
-    presetsPerMonth: 50,
-    storageGB: 5,
+    presetsPerMonth: 10,
+    storageGB: 0, // No file storage needed, just JSON
     canGenerate: true,
   },
   pro: {
-    presetsPerMonth: 200,
-    storageGB: 25,
+    presetsPerMonth: 25,
+    storageGB: 0, // No file storage needed, just JSON
     canGenerate: true,
   },
   premium: {
-    presetsPerMonth: 999999,
-    storageGB: 100,
+    presetsPerMonth: 100,
+    storageGB: 0, // No file storage needed, just JSON
     canGenerate: true,
   },
 }

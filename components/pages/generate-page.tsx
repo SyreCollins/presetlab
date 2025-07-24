@@ -68,7 +68,7 @@ export default function GeneratePage() {
     if (!presetResult) return
 
     try {
-      // Convert to XMP and download
+      // Convert to XMP and download directly
       const xmpContent = convertToXMP(presetResult.rawData)
       const blob = new Blob([xmpContent], { type: "application/xml" })
       const url = URL.createObjectURL(blob)
@@ -80,7 +80,7 @@ export default function GeneratePage() {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
 
-      // Track download if needed
+      // Track download
       fetch("/api/user/track-usage", {
         method: "POST",
         headers: {
@@ -91,6 +91,11 @@ export default function GeneratePage() {
           resource_id: presetResult.id
         }),
       }).catch(err => console.error("Failed to track download:", err))
+
+      toast({
+        title: "Downloaded!",
+        description: "Your XMP preset has been downloaded successfully.",
+      })
     } catch (error) {
       console.error("Failed to download preset:", error)
       toast({
@@ -149,9 +154,9 @@ export default function GeneratePage() {
           description: data.error,
           variant: "destructive",
           action: (
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => window.location.href = "/pricing"}
             >
               View Plans
@@ -167,9 +172,9 @@ export default function GeneratePage() {
           description: data.error,
           variant: "destructive",
           action: (
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => window.location.href = "/pricing"}
             >
               Upgrade Plan
@@ -181,7 +186,7 @@ export default function GeneratePage() {
 
       // Create preset result from API response
       const presetName = data.preset_name || `preset_${Date.now()}`
-      
+
       setPresetResult({
         id: data.id || undefined,
         presetName,
@@ -263,7 +268,7 @@ export default function GeneratePage() {
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="h-4 w-4 text-yellow-600" />
                       <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                        {usage.plan === "free" 
+                        {usage.plan === "free"
                           ? "Subscription required to generate presets"
                           : "Monthly limit reached. Upgrade for more presets."
                         }
@@ -367,8 +372,8 @@ export default function GeneratePage() {
                       <Download className="h-4 w-4 mr-2" />
                       Download XMP
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => {
                         const settingsText = JSON.stringify(presetResult.rawData, null, 2)
                         navigator.clipboard.writeText(settingsText)

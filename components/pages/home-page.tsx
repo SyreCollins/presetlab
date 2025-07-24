@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { useAuth } from "@/components/auth/auth-provider"
+import SubscriptionBanner from "@/components/subscription-banner"
 
 const quickActions = [
   {
@@ -106,32 +107,9 @@ export default function HomePage() {
   return (
     <div className="space-y-12">
       {/* Subscription Status */}
-      {!subscription.hasActiveSubscription && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-800">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Crown className="h-5 w-5 text-yellow-600" />
-                  <div>
-                    <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">
-                      Subscription Required
-                    </h3>
-                    <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                      Subscribe to start generating AI-powered presets
-                    </p>
-                  </div>
-                </div>
-                <Link href="/pricing">
-                  <Button className="bg-yellow-600 hover:bg-yellow-700 text-white">
-                    View Plans
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <SubscriptionBanner />
+      </motion.div>
 
       {/* Hero Section */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-20">

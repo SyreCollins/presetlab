@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Save the preset to the database
+    // Save the preset to the database with JSON data directly
     const { data: preset, error } = await supabase.from("presets").insert({
       user_id: user.id,
       name: preset_name,
@@ -30,47 +30,15 @@ export async function POST(request: Request) {
       preset_type,
       category: category || null,
       style_prompt: description || "",
-      file_url: "", // This will be updated with the actual file URL
+      file_url: "", // Not needed since we store JSON directly
       processing_status: "completed",
       is_public: false,
+      preset_data: preset_json, // Store the JSON data directly
     }).select().single()
 
     if (error) {
       console.error("Error saving preset:", error)
       return NextResponse.json({ error: "Failed to save preset" }, { status: 500 })
-    }
-
-    // Convert the preset JSON to a file and upload it to storage
-    const presetContent = JSON.stringify(preset_json)
-    const fileName = `${user.id}/${preset.id}.json`
-
-    const { error: uploadError } = await supabase.storage
-      .from(process.env.NEXT_PUBLIC_STORAGE_BUCKET || "presets-storage")
-      .upload(fileName, presetContent, {
-        contentType: "application/json",
-        cacheControl: "3600",
-      })
-
-    if (uploadError) {
-      console.error("Error uploading preset file:", uploadError)
-      // Delete the preset record if the file upload failed
-      await supabase.from("presets").delete().eq("id", preset.id)
-      return NextResponse.json({ error: "Failed to upload preset file" }, { status: 500 })
-    }
-
-    // Get the public URL for the uploaded file
-    const { data: publicURL } = supabase.storage
-      .from(process.env.NEXT_PUBLIC_STORAGE_BUCKET || "presets-storage")
-      .getPublicUrl(fileName)
-
-    // Update the preset record with the file URL
-    const { error: updateError } = await supabase
-      .from("presets")
-      .update({ file_url: publicURL.publicUrl })
-      .eq("id", preset.id)
-
-    if (updateError) {
-      console.error("Error updating preset with file URL:", updateError)
     }
 
     // Update the user's total presets created count
