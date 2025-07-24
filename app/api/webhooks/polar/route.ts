@@ -39,27 +39,21 @@ export async function POST(request: Request) {
       case "checkout.completed":
         await handleCheckoutCompleted(event.data, supabase)
         break
-
       case "subscription.created":
         await handleSubscriptionCreated(event.data, supabase)
         break
-
       case "subscription.updated":
         await handleSubscriptionUpdated(event.data, supabase)
         break
-
       case "subscription.cancelled":
         await handleSubscriptionCancelled(event.data, supabase)
         break
-
       case "payment.succeeded":
         await handlePaymentSucceeded(event.data, supabase)
         break
-
       case "payment.failed":
         await handlePaymentFailed(event.data, supabase)
         break
-
       default:
         console.log("Unhandled webhook event:", event.type)
     }
@@ -70,8 +64,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
-a
-sync function handleCheckoutCompleted(data: any, supabase: any) {
+
+async function handleCheckoutCompleted(data: any, supabase: any) {
   const { customer_email, metadata, amount, currency } = data
 
   if (!metadata?.user_id) {
@@ -79,7 +73,6 @@ sync function handleCheckoutCompleted(data: any, supabase: any) {
     return
   }
 
-  // Create or update subscription record
   const subscriptionData = {
     user_id: metadata.user_id,
     plan_type: metadata.plan_type,
@@ -102,9 +95,8 @@ sync function handleCheckoutCompleted(data: any, supabase: any) {
 }
 
 async function handleSubscriptionCreated(data: any, supabase: any) {
-  const { id, customer, price, status, current_period_start, current_period_end } = data
+  const { id, customer, product, status, current_period_start, current_period_end } = data
 
-  // Find user by email
   const { data: user } = await supabase
     .from("users")
     .select("id")
@@ -119,11 +111,11 @@ async function handleSubscriptionCreated(data: any, supabase: any) {
   const subscriptionData = {
     user_id: user.id,
     polar_subscription_id: id,
-    plan_type: getPlanTypeFromProduct(data.product.id),
+    plan_type: getPlanTypeFromProduct(product.id),
     status: status,
-    billing_cycle: price.recurring?.interval || "monthly",
-    amount_cents: price.amount,
-    currency: price.currency,
+    billing_cycle: product.name.toLowerCase().includes("yearly") ? "yearly" : "monthly",
+    amount_cents: product.price_amount,
+    currency: product.price_currency,
     current_period_start: current_period_start,
     current_period_end: current_period_end,
   }
@@ -135,8 +127,8 @@ async function handleSubscriptionCreated(data: any, supabase: any) {
   if (error) {
     console.error("Error creating subscription:", error)
   }
-}async 
-function handleSubscriptionUpdated(data: any, supabase: any) {
+}async
+ function handleSubscriptionUpdated(data: any, supabase: any) {
   const { id, status, current_period_start, current_period_end, canceled_at } = data
 
   const updateData: any = {
@@ -178,7 +170,6 @@ async function handleSubscriptionCancelled(data: any, supabase: any) {
 async function handlePaymentSucceeded(data: any, supabase: any) {
   const { id, subscription_id, amount, currency, description } = data
 
-  // Find the subscription
   const { data: subscription } = await supabase
     .from("subscriptions")
     .select("user_id")
@@ -190,7 +181,6 @@ async function handlePaymentSucceeded(data: any, supabase: any) {
     return
   }
 
-  // Record the payment
   const { error } = await supabase.from("payments").insert({
     user_id: subscription.user_id,
     subscription_id: subscription.id,
@@ -205,11 +195,11 @@ async function handlePaymentSucceeded(data: any, supabase: any) {
   if (error) {
     console.error("Error recording payment:", error)
   }
-}async
- function handlePaymentFailed(data: any, supabase: any) {
+}
+
+async function handlePaymentFailed(data: any, supabase: any) {
   const { id, subscription_id, amount, currency, failure_reason } = data
 
-  // Find the subscription
   const { data: subscription } = await supabase
     .from("subscriptions")
     .select("user_id")
@@ -221,7 +211,6 @@ async function handlePaymentSucceeded(data: any, supabase: any) {
     return
   }
 
-  // Record the failed payment
   const { error } = await supabase.from("payments").insert({
     user_id: subscription.user_id,
     subscription_id: subscription.id,
@@ -238,61 +227,15 @@ async function handlePaymentSucceeded(data: any, supabase: any) {
   }
 }
 
-function getPlanTypeFromPrice(priceId: string): string {
-  // Map Polar price IDs to plan types
-  const priceMapping: { [key: string]: string } = {
-    [process.env.NEXT_PUBLIC_POLAR_STARTER_MONTHLY_PRICE_ID || ""]: "starter",
-    [process.env.NEXT_PUBLIC_POLAR_STARTER_YEARLY_PRICE_ID || ""]: "starter",
-    [process.env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_PRICE_ID || ""]: "pro",
-    [process.env.NEXT_PUBLIC_POLAR_PRO_YEARLY_PRICE_ID || ""]: "pro",
-    [process.env.NEXT_PUBLIC_POLAR_PREMIUM_MONTHLY_PRICE_ID || ""]: "premium",
-    [process.env.NEXT_PUBLIC_POLAR_PREMIUM_YEARLY_PRICE_ID || ""]: "premium",
+function getPlanTypeFromProduct(productId: string): string {
+  const productMapping: { [key: string]: string } = {
+    [process.env.NEXT_PUBLIC_POLAR_STARTER_MONTHLY_PRODUCT_ID || ""]: "starter",
+    [process.env.NEXT_PUBLIC_POLAR_STARTER_YEARLY_PRODUCT_ID || ""]: "starter",
+    [process.env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_PRODUCT_ID || ""]: "pro",
+    [process.env.NEXT_PUBLIC_POLAR_PRO_YEARLY_PRODUCT_ID || ""]: "pro",
+    [process.env.NEXT_PUBLIC_POLAR_PREMIUM_MONTHLY_PRODUCT_ID || ""]: "premium",
+    [process.env.NEXT_PUBLIC_POLAR_PREMIUM_YEARLY_PRODUCT_ID || ""]: "premium",
   }
 
-  return priceMapping[priceId] || "starter"
-}async 
-function handlePaymentFailed(data: any, supabase: any) {
-  const { id, subscription_id, amount, currency, failure_reason } = data
-
-  // Find the subscription
-  const { data: subscription } = await supabase
-    .from("subscriptions")
-    .select("user_id")
-    .eq("polar_subscription_id", subscription_id)
-    .single()
-
-  if (!subscription) {
-    console.error("Subscription not found for failed payment:", subscription_id)
-    return
-  }
-
-  // Record the failed payment
-  const { error } = await supabase.from("payments").insert({
-    user_id: subscription.user_id,
-    subscription_id: subscription.id,
-    polar_payment_id: id,
-    amount_cents: amount,
-    currency,
-    status: "failed",
-    failure_reason,
-    processed_at: new Date().toISOString(),
-  })
-
-  if (error) {
-    console.error("Error recording failed payment:", error)
-  }
-}
-
-function getPlanTypeFromPrice(priceId: string): string {
-  // Map Polar price IDs to plan types
-  const priceMapping: { [key: string]: string } = {
-    [process.env.NEXT_PUBLIC_POLAR_STARTER_MONTHLY_PRICE_ID || ""]: "starter",
-    [process.env.NEXT_PUBLIC_POLAR_STARTER_YEARLY_PRICE_ID || ""]: "starter",
-    [process.env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_PRICE_ID || ""]: "pro",
-    [process.env.NEXT_PUBLIC_POLAR_PRO_YEARLY_PRICE_ID || ""]: "pro",
-    [process.env.NEXT_PUBLIC_POLAR_PREMIUM_MONTHLY_PRICE_ID || ""]: "premium",
-    [process.env.NEXT_PUBLIC_POLAR_PREMIUM_YEARLY_PRICE_ID || ""]: "premium",
-  }
-
-  return priceMapping[priceId] || "starter"
+  return productMapping[productId] || "starter"
 }

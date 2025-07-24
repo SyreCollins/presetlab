@@ -42,21 +42,17 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 ```bash
 # Polar Payment Configuration
-POLAR_SECRET_KEY=your_actual_polar_secret_key
-POLAR_WEBHOOK_SECRET=your_actual_polar_webhook_secret
+POLAR_SECRET_KEY=polar_oat_xcOgAdCuF8eyMMWZaUeMOU6CFHV4uxRPZQaSP4HnrcB
+POLAR_WEBHOOK_SECRET=your_polar_webhook_secret
 
-# Product IDs from Polar Dashboard
-POLAR_STARTER_PRODUCT_ID=your_starter_product_id
-POLAR_PRO_PRODUCT_ID=your_pro_product_id
-POLAR_PREMIUM_PRODUCT_ID=your_premium_product_id
+# Product IDs for different plans (6 products total - monthly and yearly for each)
+NEXT_PUBLIC_POLAR_STARTER_MONTHLY_PRODUCT_ID=c900d6fd-c029-4af9-b4cf-370d5de8097d
+NEXT_PUBLIC_POLAR_STARTER_YEARLY_PRODUCT_ID=4323d219-4d27-43d3-886c-3dceec93cf95
+NEXT_PUBLIC_POLAR_PRO_MONTHLY_PRODUCT_ID=b14b2037-f248-493b-9cfc-8b1848a1c664
+NEXT_PUBLIC_POLAR_PRO_YEARLY_PRODUCT_ID=6cff5db3-31af-48a3-9938-c4e138bd394f
+NEXT_PUBLIC_POLAR_PREMIUM_MONTHLY_PRODUCT_ID=552079f4-99c2-4563-bc90-01cda5927a1f
+NEXT_PUBLIC_POLAR_PREMIUM_YEARLY_PRODUCT_ID=2943e5fd-744f-4aba-8c90-1424e3375c1e
 
-# Price IDs from Polar Dashboard
-NEXT_PUBLIC_POLAR_STARTER_MONTHLY_PRICE_ID=your_starter_monthly_price_id
-NEXT_PUBLIC_POLAR_STARTER_YEARLY_PRICE_ID=your_starter_yearly_price_id
-NEXT_PUBLIC_POLAR_PRO_MONTHLY_PRICE_ID=your_pro_monthly_price_id
-NEXT_PUBLIC_POLAR_PRO_YEARLY_PRICE_ID=your_pro_yearly_price_id
-NEXT_PUBLIC_POLAR_PREMIUM_MONTHLY_PRICE_ID=your_premium_monthly_price_id
-NEXT_PUBLIC_POLAR_PREMIUM_YEARLY_PRICE_ID=your_premium_yearly_price_id
 ```
 
 ## 📋 Deployment Checklist
